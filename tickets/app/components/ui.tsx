@@ -149,3 +149,50 @@ export function Select({
 export function Separator({ className }: { className?: string }) {
   return <hr className={cn("border-t border-neutral-200", className)} />;
 }
+
+/* ---------- Chip (toggle filter) ---------- */
+export function Chip({
+  active,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      {...props}
+      className={cn(
+        "h-9 rounded-full border px-4 text-sm font-semibold transition",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
+        active
+          ? "border-black bg-black text-white"
+          : "border-neutral-300 bg-white text-neutral-700 hover:border-black",
+        className
+      )}
+    />
+  );
+}
+
+/* ---------- Checkbox ---------- */
+export function Checkbox({
+  label,
+  error,
+  ...props
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
+  label: React.ReactNode;
+  error?: string;
+}) {
+  return (
+    <div>
+      <label className="flex cursor-pointer items-start gap-2.5 text-xs text-neutral-600">
+        <input
+          type="checkbox"
+          {...props}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-black"
+        />
+        <span>{label}</span>
+      </label>
+      {error && <span className="mt-1 block text-xs text-black underline">{error}</span>}
+    </div>
+  );
+}
