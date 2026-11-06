@@ -46,7 +46,7 @@ const SUPPORT = "Hotline 09638-000-000 · support@busos.demo";
 const money = (n: number) => `৳${n.toLocaleString("en-US")}`;
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const addDays = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
-const fmtDate = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+const fmtDate = (s: string) => !s ? "" : new Date(`${s}T00:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
 const t12 = (m: number) => { const x = ((m % 1440) + 1440) % 1440, h = Math.floor(x / 60); return `${String(h % 12 || 12).padStart(2, "0")}:${String(x % 60).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
 const hm = (m: number) => `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, "0")}m`;
 const sortSeats = (s: string[]) => [...s].sort((a, b) => SEATS.indexOf(a) - SEATS.indexOf(b));
@@ -386,8 +386,16 @@ const BusCard = memo(function BusCard({ bus, pax, onView }: { bus: BusT; pax: nu
 
 /* ───────────── Page ───────────── */
 export default function Page() {
-  const [draft, setDraft] = useState<Search>({ from: "Dhaka", to: "Chittagong", date: addDays(1), pax: 1 });
+  const [draft, setDraft] = useState<Search>({ from: "Dhaka", to: "Chittagong", date: "", pax: 1 });
   const [applied, setApplied] = useState<Search>(draft);
+  const [today, setToday] = useState("");
+  // Read the current date only on the client, after mount (keeps prerender deterministic)
+  useEffect(() => {
+    const d = addDays(1);
+    setToday(addDays(0));
+    setDraft((s) => ({ ...s, date: d }));
+    setApplied((s) => ({ ...s, date: d }));
+  }, []);
   const [view, setView] = useState<"home" | "tickets">("home");
   const [types, setTypes] = useState<BusType[]>([]);
   const [slot, setSlot] = useState("all");
@@ -400,8 +408,8 @@ export default function Page() {
   const [signedIn, setSignedIn] = useState(false);
   const [err, setErr] = useState("");
 
-  const buses = useMemo(() => buildBuses(applied), [applied]);
-  const lo = Math.min(...buses.map((b) => b.price)), hi = Math.max(...buses.map((b) => b.price));
+  const buses = useMemo(() => (applied.date ? buildBuses(applied) : []), [applied]);
+  const lo = buses.length ? Math.min(...buses.map((b) => b.price)) : 0, hi = buses.length ? Math.max(...buses.map((b) => b.price)) : 0;
   const cap = maxP ?? hi;
   const visible = useMemo(() => {
     const slotOf = (m: number) => (m < 720 ? "morning" : m < 1020 ? "afternoon" : "night");
@@ -453,7 +461,7 @@ export default function Page() {
             <label><span className={lbl}>From</span><select className={inp} value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })}>{CITIES.map((c) => <option key={c}>{c}</option>)}</select></label>
             <button type="button" aria-label="Swap origin and destination" onClick={() => setDraft({ ...draft, from: draft.to, to: draft.from })} className="grid h-10 w-10 place-items-center justify-self-center rounded-full border border-slate-300 text-slate-600 transition hover:bg-slate-50"><ArrowLeftRight size={16} /></button>
             <label><span className={lbl}>To</span><select className={inp} value={draft.to} onChange={(e) => setDraft({ ...draft, to: e.target.value })}>{CITIES.map((c) => <option key={c}>{c}</option>)}</select></label>
-            <label><span className={lbl}>Journey date</span><input type="date" className={inp} min={addDays(0)} value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} /></label>
+            <label><span className={lbl}>Journey date</span><input type="date" className={inp} min={today || undefined} value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} /></label>
             <label><span className={lbl}>Passengers</span><select className={inp} value={draft.pax} onChange={(e) => setDraft({ ...draft, pax: +e.target.value })}>{[1, 2, 3, 4, 5, 6].map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
             <button className={btn}><Search size={16} />Search buses</button>
           </form>
@@ -504,6 +512,8 @@ export default function Page() {
               </div>
               {visible.length ? (
                 <div className="space-y-3">{visible.map((b) => <BusCard key={b.id} bus={b} pax={applied.pax} onView={setSel} />)}</div>
+              ) : !applied.date ? (
+                <p className="rounded-lg border border-slate-200 bg-white p-10 text-center text-sm text-slate-500">Loading buses…</p>
               ) : (
                 <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
                   <p className="font-medium text-slate-700">No buses match these filters</p><p className="mt-1">Widen the price range or clear the filters to see all {buses.length} buses.</p>
