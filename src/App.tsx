@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity, ArrowDownRight, ArrowUpRight, Bus, CalendarDays, CalendarClock,
   CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign,
@@ -149,6 +149,132 @@ const dataset: Record<string, RowData[]> = {
 
 const salesBars = [38, 54, 46, 68, 52, 78, 62, 88, 70, 95, 74, 84, 66, 100, 82, 91, 72, 86, 63, 78, 57, 73, 49, 67];
 
+
+declare global {
+  interface Window { L?: any }
+}
+
+const trackingVehicles = [
+  { id: "TR-2048", name: "Green Line · Dhaka–Chattogram", driver: "Rafiqul Islam", speed: 72, eta: "12:05 PM", status: "On route", path: [[23.8103, 90.4125], [23.95, 90.60], [24.05, 90.82], [23.95, 91.05], [23.46, 91.18], [22.95, 91.35], [22.36, 91.80]] },
+  { id: "TR-2049", name: "Hanif · Dhaka–Sylhet", driver: "Jamal Uddin", speed: 64, eta: "03:20 PM", status: "On route", path: [[23.8103, 90.4125], [23.95, 90.55], [24.05, 90.75], [24.20, 90.90], [24.45, 91.00], [24.89, 91.87]] },
+  { id: "TR-2050", name: "Shyamoli · Dhaka–Rajshahi", driver: "Abdul Karim", speed: 0, eta: "04:10 PM", status: "Stopped", path: [[23.8103, 90.4125], [23.95, 90.20], [24.05, 89.95], [24.15, 89.75], [24.36, 88.60]] },
+  { id: "TR-2051", name: "Saintmartin · Chattogram–Cox's Bazar", driver: "Sohel Rana", speed: 48, eta: "02:15 PM", status: "Delayed", path: [[22.3569, 91.7832], [22.30, 91.85], [22.25, 91.90], [22.18, 91.95], [21.95, 92.10], [21.43, 92.00]] },
+];
+
+function LiveTrackingMap() {
+  const mapElement = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<any>(null);
+  const markersRef = useRef<Record<string, any>>({});
+  const [ready, setReady] = useState(false);
+  const [selected, setSelected] = useState("TR-2048");
+  const [positions, setPositions] = useState(() => trackingVehicles.map((vehicle) => ({ ...vehicle, step: 1, lat: vehicle.path[1][0], lng: vehicle.path[1][1] })));
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadLeaflet = async () => {
+      if (!document.querySelector('link[data-leaflet="true"]')) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        link.dataset.leaflet = "true";
+        document.head.appendChild(link);
+      }
+      if (!window.L) {
+        await new Promise<void>((resolve, reject) => {
+          const existing = document.querySelector('script[data-leaflet="true"]') as HTMLScriptElement | null;
+          if (existing) {
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => reject(new Error("Map library failed to load")), { once: true });
+            if (window.L) resolve();
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+          script.dataset.leaflet = "true";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Map library failed to load"));
+          document.body.appendChild(script);
+        });
+      }
+      if (cancelled || !mapElement.current || !window.L) return;
+      const L = window.L;
+      const map = L.map(mapElement.current, { scrollWheelZoom: true }).setView([23.7, 90.9], 7);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+      const bounds: any[] = [];
+      trackingVehicles.forEach((vehicle) => {
+        const latlngs = vehicle.path.map((point) => [point[0], point[1]]);
+        L.polyline(latlngs, { color: "#737373", weight: 3, opacity: 0.45, dashArray: "7 8" }).addTo(map);
+        const point = vehicle.path[1];
+        bounds.push(point);
+        const icon = L.divIcon({
+          className: "busos-map-marker",
+          html: '<div style="width:34px;height:34px;border:2px solid white;border-radius:11px;background:#171717;color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px #0005"><span style="font-size:17px">▰</span></div>',
+          iconSize: [34, 34], iconAnchor: [17, 17],
+        });
+        const marker = L.marker(point, { icon }).addTo(map);
+        marker.bindPopup('<strong>' + vehicle.id + '</strong><br/>' + vehicle.name + '<br/>Driver: ' + vehicle.driver);
+        marker.on("click", () => setSelected(vehicle.id));
+        markersRef.current[vehicle.id] = marker;
+      });
+      map.fitBounds(L.latLngBounds(bounds).pad(0.22));
+      mapRef.current = map;
+      setReady(true);
+      setTimeout(() => map.invalidateSize(), 150);
+    };
+    loadLeaflet().catch(() => setReady(false));
+    return () => { cancelled = true; if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; markersRef.current = {}; } };
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPositions((current) => current.map((vehicle) => {
+        if (vehicle.status === "Stopped") return vehicle;
+        const nextStep = vehicle.step >= vehicle.path.length - 1 ? 1 : vehicle.step + 1;
+        const point = vehicle.path[nextStep];
+        const next = { ...vehicle, step: nextStep, lat: point[0], lng: point[1] };
+        markersRef.current[vehicle.id]?.setLatLng(point);
+        return next;
+      }));
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const focusVehicle = (id: string) => {
+    setSelected(id);
+    const vehicle = positions.find((item) => item.id === id);
+    if (vehicle && mapRef.current) {
+      mapRef.current.flyTo([vehicle.lat, vehicle.lng], 10, { duration: 0.8 });
+      markersRef.current[id]?.openPopup();
+    }
+  };
+
+  return <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.8fr)]">
+    <Card className="overflow-hidden rounded-xl border py-0 shadow-none">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
+        <div><p className="text-sm font-semibold">Bangladesh live vehicle map</p><p className="text-[11px] text-muted-foreground">Demo GPS positions · updates every 5 seconds</p></div>
+        <Badge className="gap-1.5 rounded-md bg-foreground text-background"><span className="size-1.5 animate-pulse rounded-full bg-background" /> LIVE DEMO</Badge>
+      </div>
+      <div ref={mapElement} className="h-[440px] w-full bg-muted/40 sm:h-[540px]" />
+      {!ready && <div className="border-t px-4 py-2 text-[11px] text-muted-foreground">Loading map tiles… An internet connection is required.</div>}
+      <div className="flex flex-wrap items-center gap-4 border-t px-4 py-3 text-[10px] text-muted-foreground"><span className="flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-foreground" /> Active vehicle</span><span>Dashed lines show sample route paths</span><span className="ml-auto">Map data © OpenStreetMap</span></div>
+    </Card>
+    <div className="space-y-3">
+      <Card className="rounded-xl border py-4 shadow-none"><CardContent className="px-4">
+        <div className="mb-3 flex items-center justify-between"><p className="text-xs font-semibold">Vehicles on the road</p><Badge variant="outline" className="text-[10px]">4 tracked</Badge></div>
+        <div className="grid grid-cols-2 gap-2"><div className="rounded-lg bg-muted/50 p-3"><p className="text-[10px] text-muted-foreground">Moving</p><p className="mt-1 text-xl font-semibold">3</p></div><div className="rounded-lg bg-muted/50 p-3"><p className="text-[10px] text-muted-foreground">Stopped</p><p className="mt-1 text-xl font-semibold">1</p></div></div>
+      </CardContent></Card>
+      <div className="space-y-2">{positions.map((vehicle) => <button key={vehicle.id} onClick={() => focusVehicle(vehicle.id)} className={`w-full rounded-xl border bg-card p-3 text-left transition-colors hover:bg-muted/50 ${selected === vehicle.id ? "border-foreground" : ""}`}>
+        <div className="flex items-start justify-between gap-2"><div className="flex min-w-0 items-center gap-2"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted"><Bus className="size-4" /></div><div className="min-w-0"><p className="text-xs font-semibold">{vehicle.id}</p><p className="truncate text-[10px] text-muted-foreground">{vehicle.name}</p></div></div><StatusBadge value={vehicle.status} /></div>
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t pt-2"><div><p className="text-[10px] text-muted-foreground">Speed</p><p className="text-xs font-medium">{vehicle.speed} km/h</p></div><div><p className="text-[10px] text-muted-foreground">ETA</p><p className="text-xs font-medium">{vehicle.eta}</p></div></div>
+        <p className="mt-2 text-[10px] text-muted-foreground">GPS: {vehicle.lat.toFixed(4)}, {vehicle.lng.toFixed(4)} · Click to locate</p>
+      </button>)}</div>
+    </div>
+  </div>;
+}
+
 function StatusBadge({ value }: { value: string }) {
   const dark = ["Boarding", "Confirmed", "Active", "Completed", "On route", "Available", "VIP"].includes(value);
   return <Badge variant="outline" className={`rounded-md px-2 py-0.5 text-[10px] font-medium ${dark ? "border-foreground/20 bg-foreground text-background" : "bg-muted/50 text-muted-foreground"}`}>{value}</Badge>;
@@ -273,7 +399,7 @@ function App() {
               {active === "Finance" && <><Metric title="Total revenue" value="৳ 8.42L" note="Today's ticket sales" icon={CircleDollarSign} change="+12.8%" /><Metric title="Operating expenses" value="৳ 1.24L" note="Fuel, tolls and workshop" icon={Wallet} /><Metric title="Net operating" value="৳ 7.18L" note="Before settlements" icon={ArrowUpRight} /><Metric title="Pending settlements" value="৳ 42,500" note="Agent and counter balance" icon={CreditCard} /></>}
               {active === "Live tracking" && <><Metric title="Active GPS devices" value="36 / 36" note="All active trips reporting" icon={Wifi} /><Metric title="Moving vehicles" value="32" note="4 stopped at terminals" icon={Bus} /><Metric title="Average speed" value="61 km/h" note="Across active vehicles" icon={Gauge} /><Metric title="Delayed trips" value="2" note="Estimated delay above 15 min" icon={Clock3} /></>}
             </div>
-            {active === "Live tracking" && <Card className="gap-4 rounded-xl border shadow-none"><CardHeader className="pb-0"><CardTitle className="text-sm">Live operations map</CardTitle><CardDescription className="text-xs">Schematic demo view · GPS locations are sample data</CardDescription></CardHeader><CardContent><div className="relative overflow-hidden rounded-xl border bg-muted/30 p-5"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(90deg, transparent 49%, hsl(var(--border)) 50%, transparent 51%), linear-gradient(transparent 49%, hsl(var(--border)) 50%, transparent 51%)", backgroundSize: "48px 48px" }} /><div className="relative grid gap-3 sm:grid-cols-2"><div className="rounded-lg border bg-background/95 p-3"><div className="flex items-center gap-2 text-xs font-semibold"><span className="size-2 rounded-full bg-foreground" /> TR-2048 · Cumilla</div><p className="mt-1 text-[11px] text-muted-foreground">Dhaka → Chattogram · ETA 12:05 PM</p></div><div className="rounded-lg border bg-background/95 p-3"><div className="flex items-center gap-2 text-xs font-semibold"><span className="size-2 rounded-full bg-foreground" /> TR-2049 · Bhairab</div><p className="mt-1 text-[11px] text-muted-foreground">Dhaka → Sylhet · ETA 03:20 PM</p></div><div className="rounded-lg border bg-background/95 p-3"><div className="flex items-center gap-2 text-xs font-semibold"><span className="size-2 rounded-full bg-muted-foreground" /> TR-2050 · Tangail</div><p className="mt-1 text-[11px] text-muted-foreground">Dhaka → Rajshahi · Stopped 3 min</p></div><div className="rounded-lg border bg-background/95 p-3"><div className="flex items-center gap-2 text-xs font-semibold"><span className="size-2 rounded-full bg-foreground" /> TR-2051 · Patiya</div><p className="mt-1 text-[11px] text-muted-foreground">Chattogram → Cox's Bazar · Delayed</p></div></div><div className="relative mt-4 flex items-center justify-center gap-2 text-[10px] text-muted-foreground"><MapPin className="size-3.5" /> Bangladesh · schematic map placeholder</div></div></CardContent></Card>}
+            {active === "Live tracking" && <LiveTrackingMap />}
             {active === "Finance" && <div className="grid gap-4 lg:grid-cols-2"><Card className="rounded-xl border shadow-none"><CardHeader><CardTitle className="text-sm">Revenue vs expenses</CardTitle><CardDescription className="text-xs">Daily financial performance</CardDescription></CardHeader><CardContent className="space-y-4">{[{ label: "Ticket revenue", amount: "৳ 8,42,000", width: "88%" }, { label: "Operating expenses", amount: "৳ 1,24,000", width: "24%" }, { label: "Agent settlements", amount: "৳ 42,500", width: "12%" }].map((x) => <div key={x.label}><div className="mb-2 flex justify-between text-xs"><span className="text-muted-foreground">{x.label}</span><span className="font-medium">{x.amount}</span></div><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-foreground" style={{ width: x.width }} /></div></div>)}</CardContent></Card><Card className="rounded-xl border shadow-none"><CardHeader><CardTitle className="text-sm">Payment methods</CardTitle><CardDescription className="text-xs">Collected ticket revenue</CardDescription></CardHeader><CardContent className="space-y-3">{[{ name: "Cash / counter", amount: "৳ 4,80,000", percent: "57%" }, { name: "Mobile financial services", amount: "৳ 2,10,000", percent: "25%" }, { name: "Online card", amount: "৳ 1,52,000", percent: "18%" }].map((x) => <div key={x.name} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"><div><p className="text-xs font-medium">{x.name}</p><p className="mt-1 text-[11px] text-muted-foreground">{x.amount}</p></div><Badge variant="outline" className="text-[10px]">{x.percent}</Badge></div>)}</CardContent></Card></div>}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-sm font-semibold">{active === "Live tracking" ? "Active vehicle feed" : `All ${active.toLowerCase()}`}</h2><p className="mt-1 text-xs text-muted-foreground">Search, review and manage sample records</p></div><div className="flex items-center gap-2"><Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"><Filter className="size-3.5" /> Filters</Button><Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"><SlidersHorizontal className="size-3.5" /> Columns</Button></div></div>
             <DataTable rows={currentRows} cols={columns[active]} search={search} />
