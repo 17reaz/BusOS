@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Activity, ArrowDownRight, ArrowUpRight, Bus, CalendarDays, CalendarClock,
+  Activity, ArrowUpRight, Bus, CalendarDays, CalendarClock,
   CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign,
   Clock3, Command, CreditCard, Download, Filter, Gauge, LayoutDashboard,
-  LifeBuoy, MapPin, MapPinned, Menu, MoreHorizontal, Navigation, Plus,
-  Search, Settings, SlidersHorizontal, Ticket, Users, Wallet, Wifi, X,
+  LifeBuoy,MapPinned, Menu, MoreHorizontal, Navigation, Plus,
+  Search, SlidersHorizontal, Ticket, Users, Wallet, Wifi, X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
