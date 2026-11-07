@@ -201,12 +201,16 @@ function App() {
 
   const submitCreate = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const id = `BK-${80422 + bookings.length - initialBookings.length}`;
-    setBookings((items) => [{ id, passenger: createdName || "Demo passenger", route: "Dhaka → Chattogram", seat: "E1", trip: "TR-2048", date: "07 Nov, 02:00 PM", amount: "৳ 1,200", status: "Confirmed", channel: "Counter" }, ...items]);
+    if (active === "Ticket sales" || active === "Overview") {
+      const id = `BK-${80422 + bookings.length - initialBookings.length}`;
+      setBookings((items) => [{ id, passenger: createdName || "Demo passenger", route: "Dhaka → Chattogram", seat: "E1", trip: "TR-2048", date: "07 Nov, 02:00 PM", amount: "৳ 1,200", status: "Confirmed", channel: "Counter" }, ...items]);
+      setActive("Ticket sales");
+      setNotice("Demo booking created successfully");
+    } else {
+      setNotice(`${createdLabel} demo action completed · sample data only`);
+    }
     setDialogOpen(false);
-    setActive("Ticket sales");
     setSearch("");
-    setNotice("Demo booking created successfully");
   };
 
   const SidebarContent = () => (
@@ -277,7 +281,7 @@ function App() {
           <p className="pb-2 text-center text-[10px] text-muted-foreground">BusOS Admin · Interactive demo · All figures and records are sample data</p>
         </div></main>
       </div>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent><DialogHeader><DialogTitle>{createdLabel}</DialogTitle><DialogDescription>This demo form creates a sample booking locally in the current session.</DialogDescription></DialogHeader><form onSubmit={submitCreate} className="space-y-3"><div><label className="mb-1.5 block text-xs font-medium">Passenger name</label><Input value={createdName} onChange={(event) => setCreatedName(event.target.value)} placeholder="Enter passenger name" required /></div><div><label className="mb-1.5 block text-xs font-medium">Route</label><Input value="Dhaka → Chattogram" readOnly /></div><div><label className="mb-1.5 block text-xs font-medium">Departure</label><Input value="07 Nov 2026 · 02:00 PM" readOnly /></div><DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button type="submit">Create demo booking</Button></DialogFooter></form></DialogContent></Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent><DialogHeader><DialogTitle>{createdLabel}</DialogTitle><DialogDescription>This demo form simulates the selected action. No real records are saved.</DialogDescription></DialogHeader><form onSubmit={submitCreate} className="space-y-3"><div><label className="mb-1.5 block text-xs font-medium">Passenger name</label><Input value={createdName} onChange={(event) => setCreatedName(event.target.value)} placeholder="Enter passenger name" required /></div><div><label className="mb-1.5 block text-xs font-medium">Route</label><Input value="Dhaka → Chattogram" readOnly /></div><div><label className="mb-1.5 block text-xs font-medium">Departure</label><Input value="07 Nov 2026 · 02:00 PM" readOnly /></div><DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button type="submit">Create demo booking</Button></DialogFooter></form></DialogContent></Dialog>
     </div>
   );
 }
