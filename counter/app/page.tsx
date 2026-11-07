@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, CSSProperties } from "react";
+import { useEffect, useMemo, useState, CSSProperties } from "react";
 
 type Trip = {
   id: number;
@@ -93,7 +93,11 @@ function seatStyle(state: "free" | "booked" | "selected"): CSSProperties {
 export default function CounterBookingPage() {
   const [from, setFrom] = useState("Dhaka");
   const [to, setTo] = useState("Chattogram");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    setDate(new Date().toISOString().slice(0, 10));
+  }, []);
   const [searched, setSearched] = useState(true);
   const [tripId, setTripId] = useState<number | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
