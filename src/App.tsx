@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, ArrowDownRight, ArrowUpRight, Bus, CalendarDays, Check,
-  ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock3, Command,
+  Activity,  ArrowUpRight, Bus, CalendarDays, Check,
+  ChevronDown, ChevronLeft, ChevronRight, Clock3, Command,
   Download, Ellipsis, LayoutDashboard, LifeBuoy, MapPinned, Menu,
-  MoreHorizontal, Plus, Search, Settings2, Ticket, Users, Wallet,
+  MoreHorizontal, Plus, Search, Ticket, Users, Wallet,
   X, Zap,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
