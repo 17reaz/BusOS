@@ -313,7 +313,7 @@ function App() {
 
   const currentConfig = pageConfig[active];
   const currentRows = active === "Ticket sales" ? bookings : dataset[active] ?? [];
-  const filteredCount = useMemo(() => currentRows.filter((row) => Object.values(row).join(" ").toLowerCase().includes(search.toLowerCase())).length, [currentRows, search]);
+  // const filteredCount = useMemo(() => currentRows.filter((row) => Object.values(row).join(" ").toLowerCase().includes(search.toLowerCase())).length, [currentRows, search]);
 
   const openCreate = () => {
     if (active === "Live tracking") {
