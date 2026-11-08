@@ -55,7 +55,7 @@ function App() {
     event.preventDefault();
     if (active === "Ticket sales" || active === "Overview") {
       const id = `BK-${80422 + bookings.length - initialBookings.length}`;
-      setBookings((items) => [{ id, passenger: createdName || "Demo passenger", route: "Dhaka → Chattogram", seat: "E1", trip: "TR-2048", date: "07 Nov, 02:00 PM", amount: "৳ 1,200", status: "Confirmed", channel: "Counter" }, ...items]);
+      setBookings((items) => [{ id, passenger: createdName || "Demo passenger", route: "Dhaka → Chattogram", seat: "E1", trip: "TR-2048", date: `${todayLabel}, 02:00 PM`, amount: "৳ 1,200", status: "Confirmed", channel: "Counter" }, ...items]);
       setActive("Ticket sales");
       setNotice("Demo booking created successfully");
     } else {
