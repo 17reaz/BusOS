@@ -1,4 +1,4 @@
-import { ArrowUpRight, Bus, CalendarDays, CheckCircle2, ChevronRight, Clock3, Gauge, Ticket, Users, Wallet, Wifi } from "lucide-react";
+import { ArrowUpRight, Bus, ChevronRight, Clock3, Gauge, Ticket, Users, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metric } from "@/features/admin/components/metric-card";
