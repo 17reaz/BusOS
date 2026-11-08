@@ -93,7 +93,7 @@ function App() {
   return (
     <div className="min-h-screen bg-muted/30 text-foreground">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[252px] flex-col border-r bg-background lg:flex"><AdminSidebar active={active} onNavigate={(page) => { setActive(page); setSearch(""); setMobileOpen(false); }} onClose={() => setMobileOpen(false)} onHelp={() => setNotice("Help center is planned for the next Admin module release.")} /></aside>
-      {mobileOpen && <div className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={() => setMobileOpen(false)}><aside className="flex h-full w-[280px] flex-col border-r bg-background shadow-xl" onClick={(event) => event.stopPropagation()}><SidebarContent /></aside></div>}
+      {mobileOpen && <div className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={() => setMobileOpen(false)}><aside className="flex h-full w-[280px] flex-col border-r bg-background shadow-xl" onClick={(event) => event.stopPropagation()}><AdminSidebar active={active} onNavigate={(page) => { setActive(page); setSearch(""); setMobileOpen(false); }} onClose={() => setMobileOpen(false)} onHelp={() => setNotice("Help center is planned for the next Admin module release.")} /></aside></div>}
       <div className="lg:pl-[252px]">
         <header className="fixed left-0 right-0 top-0 z-30 flex h-[72px] items-center border-b bg-background/95 px-4 backdrop-blur lg:left-[252px] lg:px-8">
           <Button variant="ghost" size="icon" className="mr-2 lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-5" /></Button>
