@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Activity, Bus } from "lucide-react";
+import { Bus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { trackingVehicles } from "@/features/admin/data/demo-data";
+import { StatusBadge } from "./status-badge";
 
 function LiveTrackingMap() {
   const mapElement = useRef<HTMLDivElement>(null);
