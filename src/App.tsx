@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { columns, dataset, finance, fleet, initialBookings, navigation, operations, pageConfig, passengers, routes, salesBars, trips } from "@/features/admin/data/demo-data";
+import { columns, dataset, initialBookings, navigation, operations, pageConfig, salesBars, trips, type RowData } from "@/features/admin/data/demo-data";
 import { LiveTrackingMap } from "@/features/admin/components/live-tracking-map";
 import { StatusBadge } from "@/features/admin/components/status-badge";
 import { Metric } from "@/features/admin/components/metric-card";
 import { DataTable } from "@/features/admin/components/data-table";
 import {
   Activity, ArrowUpRight, Bus, CalendarDays, CalendarClock,
-  CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign,
+  CheckCircle2, ChevronDown, ChevronRight, CircleDollarSign,
   Clock3, Command, CreditCard, Download, Filter, Gauge,
   LifeBuoy,MapPinned, Menu, MoreHorizontal, Navigation, Plus,
   Search, SlidersHorizontal, Ticket, Users, Wallet, Wifi, X,
@@ -34,10 +34,11 @@ function App() {
   const [createdLabel, setCreatedLabel] = useState("");
   const [createdName, setCreatedName] = useState("");
   const [bookings, setBookings] = useState(initialBookings);
+  const [moduleRecords, setModuleRecords] = useState(dataset);
   const [notice, setNotice] = useState("");
 
   const currentConfig = pageConfig[active];
-  const currentRows = active === "Ticket sales" ? bookings : dataset[active] ?? [];
+  const currentRows = active === "Ticket sales" ? bookings : moduleRecords[active] ?? [];
   // const filteredCount = useMemo(() => currentRows.filter((row) => Object.values(row).join(" ").toLowerCase().includes(search.toLowerCase())).length, [currentRows, search]);
 
   const openCreate = () => {
@@ -58,7 +59,19 @@ function App() {
       setActive("Ticket sales");
       setNotice("Demo booking created successfully");
     } else {
-      setNotice(`${createdLabel} demo action completed · sample data only`);
+      const suffix = String(Date.now()).slice(-6);
+      const created: Record<string, RowData> = {
+        "Crew & staff": { id: `STF-${suffix}`, name: createdName, role: "Staff member", phone: "Not provided", license: "Pending verification", assigned: "Unassigned", status: "Active" },
+        Maintenance: { id: `WO-${suffix}`, vehicle: "Unassigned vehicle", service: createdName, due: "To be scheduled", workshop: "Unassigned", cost: "৳ 0", status: "Open" },
+        Inventory: { id: `INV-${suffix}`, item: createdName, category: "General", stock: "0", unit: "Pieces", reorder: "—", status: "New" },
+        Counters: { id: `CTR-${suffix}`, name: createdName, branch: "Unassigned", manager: "Unassigned", phone: "Not provided", sales: "৳ 0", status: "Active" },
+        "Users & roles": { id: `USR-${suffix}`, name: createdName, email: "Invitation pending", role: "Staff", lastActive: "Never", status: "Invited" },
+      };
+      const record = created[active];
+      if (record) {
+        setModuleRecords((current) => ({ ...current, [active]: [record, ...(current[active] ?? [])] }));
+        setNotice(`${createdLabel} added to the local demo workspace. It is not saved to a server.`);
+      }
     }
     setDialogOpen(false);
     setSearch("");
@@ -132,7 +145,7 @@ function App() {
           <p className="pb-2 text-center text-[10px] text-muted-foreground">BusOS Admin · Interactive demo · All figures and records are sample data</p>
         </div></main>
       </div>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent><DialogHeader><DialogTitle>{createdLabel}</DialogTitle><DialogDescription>This demo form simulates the selected action. No real records are saved.</DialogDescription></DialogHeader><form onSubmit={submitCreate} className="space-y-3"><div><label className="mb-1.5 block text-xs font-medium">Passenger name</label><Input value={createdName} onChange={(event) => setCreatedName(event.target.value)} placeholder="Enter passenger name" required /></div><div><label className="mb-1.5 block text-xs font-medium">Route</label><Input value="Dhaka → Chattogram" readOnly /></div><div><label className="mb-1.5 block text-xs font-medium">Departure</label><Input value="07 Nov 2026 · 02:00 PM" readOnly /></div><DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button type="submit">Create demo booking</Button></DialogFooter></form></DialogContent></Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent><DialogHeader><DialogTitle>{createdLabel}</DialogTitle><DialogDescription>Add a sample record to this local demo workspace. Nothing is sent to a server.</DialogDescription></DialogHeader><form onSubmit={submitCreate} className="space-y-3"><div><label className="mb-1.5 block text-xs font-medium">{active === "Ticket sales" || active === "Overview" ? "Passenger name" : "Name / description"}</label><Input value={createdName} onChange={(event) => setCreatedName(event.target.value)} placeholder={active === "Ticket sales" || active === "Overview" ? "Enter passenger name" : `Enter ${active.toLowerCase()} name or description`} required /></div><div><label className="mb-1.5 block text-xs font-medium">Route</label><Input value="Dhaka → Chattogram" readOnly /></div><div><label className="mb-1.5 block text-xs font-medium">Departure</label><Input value="07 Nov 2026 · 02:00 PM" readOnly /></div><DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button type="submit">{active === "Ticket sales" || active === "Overview" ? "Create demo booking" : `Add demo ${active === "Maintenance" ? "work order" : active === "Inventory" ? "item" : active === "Users & roles" ? "invitation" : active === "Crew & staff" ? "crew member" : "counter"}`}</Button></DialogFooter></form></DialogContent></Dialog>
     </div>
   );
 }
