@@ -1,13 +1,14 @@
-declare global {
-  interface Window { L?: any }
-}
-
 import { useEffect, useRef, useState } from "react";
 import { Bus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { trackingVehicles } from "@/features/admin/data/demo-data";
 import { StatusBadge } from "./status-badge";
+
+declare global {
+  interface Window { L?: any }
+}
+
 
 function LiveTrackingMap() {
   const mapElement = useRef<HTMLDivElement>(null);
