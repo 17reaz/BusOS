@@ -45,6 +45,12 @@ Do not move the root Admin app or `tickets/` until their separate build/deployme
 - Passenger metadata previously carried Create Next App defaults; it has now been updated to BusOS Tickets.
 - A GitHub Actions workflow now defines separate install, lint, type-check and build jobs for Admin and Passenger.
 
+
+### First Admin extraction completed
+- Extracted the navigation definitions, page configuration, table columns, demo datasets and sample tracking paths from `src/App.tsx` into `src/features/admin/data/demo-data.ts`.
+- `src/App.tsx` now imports those fixtures instead of owning the full demo data block.
+- This is a behavior-preserving structural step only; the data remains demo-only and the dashboard component still needs to be split into focused feature components.
+
 ## CI expectations
 
 The workflow is defined in `.github/workflows/ci.yml`. The first GitHub Actions run is the verification point. If a check fails, fix the actual failure before making structural moves; do not weaken or silently skip the check.
