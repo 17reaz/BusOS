@@ -10,7 +10,7 @@ import {
   CheckCircle2, ChevronDown, ChevronRight, CircleDollarSign,
   Clock3, Command, CreditCard, Download, Filter, Gauge,
   LifeBuoy, MapPinned, Menu, MoreHorizontal, Navigation, Package, Plus,
-  Search, ShieldCheck, SlidersHorizontal, Ticket, UserRoundCog, Users, Wallet, Wifi, Wrench, X,
+  Search, ShieldCheck, Ticket, UserRoundCog, Users, Wallet, Wifi, Wrench, X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -156,7 +156,7 @@ function App() {
             </div>
             {active === "Live tracking" && <LiveTrackingMap />}
             {active === "Finance" && <div className="grid gap-4 lg:grid-cols-2"><Card className="rounded-xl border shadow-none"><CardHeader><CardTitle className="text-sm">Revenue vs expenses</CardTitle><CardDescription className="text-xs">Daily financial performance</CardDescription></CardHeader><CardContent className="space-y-4">{[{ label: "Ticket revenue", amount: "৳ 8,42,000", width: "88%" }, { label: "Operating expenses", amount: "৳ 1,24,000", width: "24%" }, { label: "Agent settlements", amount: "৳ 42,500", width: "12%" }].map((x) => <div key={x.label}><div className="mb-2 flex justify-between text-xs"><span className="text-muted-foreground">{x.label}</span><span className="font-medium">{x.amount}</span></div><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-foreground" style={{ width: x.width }} /></div></div>)}</CardContent></Card><Card className="rounded-xl border shadow-none"><CardHeader><CardTitle className="text-sm">Payment methods</CardTitle><CardDescription className="text-xs">Collected ticket revenue</CardDescription></CardHeader><CardContent className="space-y-3">{[{ name: "Cash / counter", amount: "৳ 4,80,000", percent: "57%" }, { name: "Mobile financial services", amount: "৳ 2,10,000", percent: "25%" }, { name: "Online card", amount: "৳ 1,52,000", percent: "18%" }].map((x) => <div key={x.name} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"><div><p className="text-xs font-medium">{x.name}</p><p className="mt-1 text-[11px] text-muted-foreground">{x.amount}</p></div><Badge variant="outline" className="text-[10px]">{x.percent}</Badge></div>)}</CardContent></Card></div>}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-sm font-semibold">{active === "Live tracking" ? "Active vehicle feed" : `All ${active.toLowerCase()}`}</h2><p className="mt-1 text-xs text-muted-foreground">Search, review and manage sample records</p></div><div className="flex items-center gap-2"><Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"><Filter className="size-3.5" /> Filters</Button><Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"><SlidersHorizontal className="size-3.5" /> Columns</Button></div></div>
+            <div className="flex flex-col gap-1"><h2 className="text-sm font-semibold">{active === "Live tracking" ? "Active vehicle feed" : `All ${active.toLowerCase()}`}</h2><p className="text-xs text-muted-foreground">Search, filter by status, sort columns, inspect records or export CSV</p></div>
             <DataTable rows={currentRows} cols={columns[active]} search={search} />
           </>}
           <p className="pb-2 text-center text-[10px] text-muted-foreground">BusOS Admin · Interactive demo · All figures and records are sample data</p>
