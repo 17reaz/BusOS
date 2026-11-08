@@ -1,4 +1,4 @@
-import { Activity, Bus, CalendarDays, LayoutDashboard, MapPinned, Ticket, Users, Wallet } from "lucide-react";
+import { Activity, Bus, Building2, CalendarDays, FileBarChart, LayoutDashboard, MapPinned, Package, Ticket, Users, UserRoundCog, Wallet, Wrench } from "lucide-react";
 
 export type RowData = Record<string, string>;
 export type Column = { key: string; label: string; className?: string };
@@ -9,11 +9,17 @@ export const navigation = [
   { label: "Trips & schedules", icon: CalendarDays },
   { label: "Routes", icon: MapPinned },
   { label: "Passengers", icon: Users },
+  { label: "Crew & staff", icon: UserRoundCog },
 ];
 export const operations = [
   { label: "Fleet", icon: Bus },
   { label: "Finance", icon: Wallet },
   { label: "Live tracking", icon: Activity },
+  { label: "Maintenance", icon: Wrench },
+  { label: "Inventory", icon: Package },
+  { label: "Counters", icon: Building2 },
+  { label: "Users & roles", icon: UserRoundCog },
+  { label: "Reports", icon: FileBarChart },
 ];
 
 export const initialBookings: RowData[] = [
@@ -65,6 +71,43 @@ export const tracking: RowData[] = [
   { id: "TR-2051", coach: "Saintmartin · Chattogram–Cox's Bazar", location: "Patiya", speed: "48 km/h", updated: "Just now", eta: "02:15 PM", status: "Delayed" },
 ];
 
+export const crew: RowData[] = [
+  { id: "STF-001", name: "Rafiqul Islam", role: "Driver", phone: "01711-220011", license: "Professional · Valid", assigned: "TR-2048", status: "Active" },
+  { id: "STF-002", name: "Jamal Uddin", role: "Driver", phone: "01811-330022", license: "Professional · Valid", assigned: "TR-2049", status: "Active" },
+  { id: "STF-003", name: "Abdul Karim", role: "Driver", phone: "01911-440033", license: "Renewal due", assigned: "Unassigned", status: "Review" },
+  { id: "STF-004", name: "Sohel Rana", role: "Conductor", phone: "01611-550044", license: "Not required", assigned: "TR-2051", status: "Active" },
+];
+
+export const maintenance: RowData[] = [
+  { id: "WO-1008", vehicle: "DHK-METRO-11-2048", service: "Preventive inspection", due: "10 Nov 2026", workshop: "Dhaka Central", cost: "৳ 8,500", status: "Scheduled" },
+  { id: "WO-1007", vehicle: "CTG-METRO-11-2051", service: "Engine diagnostics", due: "08 Nov 2026", workshop: "Chattogram Depot", cost: "৳ 24,000", status: "In progress" },
+  { id: "WO-1006", vehicle: "DHK-METRO-11-2050", service: "Brake pad replacement", due: "06 Nov 2026", workshop: "Dhaka Central", cost: "৳ 12,000", status: "Completed" },
+];
+
+export const inventory: RowData[] = [
+  { id: "INV-001", item: "Engine oil 15W-40", category: "Lubricants", stock: "42", unit: "Litres", reorder: "20", status: "Available" },
+  { id: "INV-002", item: "Brake pad set", category: "Spare parts", stock: "8", unit: "Sets", reorder: "10", status: "Low stock" },
+  { id: "INV-003", item: "Air filter", category: "Spare parts", stock: "24", unit: "Pieces", reorder: "12", status: "Available" },
+];
+
+export const counters: RowData[] = [
+  { id: "CTR-001", name: "Gabtoli Main Counter", branch: "Dhaka", manager: "Mizanur Rahman", phone: "01700-110011", sales: "৳ 84,500", status: "Active" },
+  { id: "CTR-002", name: "Sayedabad Counter", branch: "Dhaka", manager: "Shafiq Ahmed", phone: "01800-220022", sales: "৳ 62,300", status: "Active" },
+  { id: "CTR-003", name: "Dampara Counter", branch: "Chattogram", manager: "Nayeem Hasan", phone: "01900-330033", sales: "৳ 48,200", status: "Review" },
+];
+
+export const users: RowData[] = [
+  { id: "USR-001", name: "Reaz Ahmed", email: "owner@busos.demo", role: "Owner", lastActive: "Just now", status: "Active" },
+  { id: "USR-002", name: "Mizanur Rahman", email: "gabtoli@busos.demo", role: "Counter manager", lastActive: "Today", status: "Active" },
+  { id: "USR-003", name: "Shafiq Ahmed", email: "sayedabad@busos.demo", role: "Counter agent", lastActive: "Yesterday", status: "Invited" },
+];
+
+export const reports: RowData[] = [
+  { id: "RPT-001", name: "Daily ticket sales", category: "Revenue", period: "07 Nov 2026", generatedBy: "System", status: "Ready" },
+  { id: "RPT-002", name: "Trip performance", category: "Operations", period: "01–07 Nov 2026", generatedBy: "System", status: "Ready" },
+  { id: "RPT-003", name: "Fleet utilization", category: "Fleet", period: "October 2026", generatedBy: "System", status: "Ready" },
+];
+
 export const pageConfig: Record<string, { title: string; description: string; action: string }> = {
   "Ticket sales": { title: "Ticket sales", description: "Manage reservations, counter sales and passenger tickets.", action: "New booking" },
   "Trips & schedules": { title: "Trips & schedules", description: "Plan departures, assign coaches and monitor trip status.", action: "Create trip" },
@@ -73,6 +116,12 @@ export const pageConfig: Record<string, { title: string; description: string; ac
   Fleet: { title: "Fleet management", description: "Track buses, coach assignments and vehicle availability.", action: "Add vehicle" },
   Finance: { title: "Finance", description: "Monitor revenue, operating costs and settlement activity.", action: "Add transaction" },
   "Live tracking": { title: "Live tracking", description: "Monitor active coaches and their latest reported locations.", action: "Refresh locations" },
+  "Crew & staff": { title: "Crew & staff", description: "Manage drivers, conductors, licenses and trip assignments.", action: "Add crew member" },
+  Maintenance: { title: "Maintenance", description: "Schedule vehicle inspections, service work and repair history.", action: "Create work order" },
+  Inventory: { title: "Inventory", description: "Track spare parts, workshop supplies and reorder levels.", action: "Add inventory item" },
+  Counters: { title: "Counters & branches", description: "Manage sales counters, branch contacts and daily performance.", action: "Add counter" },
+  "Users & roles": { title: "Users & roles", description: "Manage workspace access and staff role assignments.", action: "Invite user" },
+  Reports: { title: "Reports", description: "Review operational, financial and fleet reports.", action: "Export reports" },
 };
 
 export const columns: Record<string, Column[]> = {
@@ -118,11 +167,18 @@ export const columns: Record<string, Column[]> = {
     { key: "updated", label: "Last update" }, { key: "eta", label: "Estimated arrival" },
     { key: "status", label: "Status" },
   ],
+  "Crew & staff": [{ key: "id", label: "Staff ID" }, { key: "name", label: "Name" }, { key: "role", label: "Role" }, { key: "phone", label: "Phone" }, { key: "license", label: "License" }, { key: "assigned", label: "Assignment" }, { key: "status", label: "Status" }],
+  Maintenance: [{ key: "id", label: "Work order" }, { key: "vehicle", label: "Vehicle" }, { key: "service", label: "Service" }, { key: "due", label: "Due date" }, { key: "workshop", label: "Workshop" }, { key: "cost", label: "Est. cost" }, { key: "status", label: "Status" }],
+  Inventory: [{ key: "id", label: "SKU" }, { key: "item", label: "Item" }, { key: "category", label: "Category" }, { key: "stock", label: "Stock" }, { key: "unit", label: "Unit" }, { key: "reorder", label: "Reorder at" }, { key: "status", label: "Status" }],
+  Counters: [{ key: "id", label: "Counter ID" }, { key: "name", label: "Counter" }, { key: "branch", label: "Branch" }, { key: "manager", label: "Manager" }, { key: "phone", label: "Phone" }, { key: "sales", label: "Today sales" }, { key: "status", label: "Status" }],
+  "Users & roles": [{ key: "id", label: "User ID" }, { key: "name", label: "Name" }, { key: "email", label: "Email" }, { key: "role", label: "Role" }, { key: "lastActive", label: "Last active" }, { key: "status", label: "Status" }],
+  Reports: [{ key: "id", label: "Report ID" }, { key: "name", label: "Report" }, { key: "category", label: "Category" }, { key: "period", label: "Period" }, { key: "generatedBy", label: "Generated by" }, { key: "status", label: "Status" }],
 };
 
 export const dataset: Record<string, RowData[]> = {
   "Ticket sales": initialBookings, "Trips & schedules": trips, Routes: routes,
   Passengers: passengers, Fleet: fleet, Finance: finance, "Live tracking": tracking,
+  "Crew & staff": crew, Maintenance: maintenance, Inventory: inventory, Counters: counters, "Users & roles": users, Reports: reports,
 };
 
 export const salesBars = [38, 54, 46, 68, 52, 78, 62, 88, 70, 95, 74, 84, 66, 100, 82, 91, 72, 86, 63, 78, 57, 73, 49, 67];
