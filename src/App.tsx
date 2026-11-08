@@ -67,6 +67,11 @@ function App() {
     } else {
       const suffix = String(Date.now()).slice(-6);
       const created: Record<string, RowData> = {
+        "Trips & schedules": { id: `TR-${suffix}`, route: createdName, departure: "To be scheduled", coach: "Unassigned", seats: "0 / 40", driver: "Unassigned", status: "Scheduled" },
+        Routes: { id: `RT-${suffix}`, from: createdName, to: "Set destination", distance: "—", duration: "—", fare: "To be configured", trips: "0 daily", status: "Review" },
+        Passengers: { id: `PS-${suffix}`, name: createdName, phone: "Not provided", bookings: "0", spent: "৳ 0", lastTrip: "Never", status: "New" },
+        Fleet: { id: `VEH-${suffix}`, coach: createdName, type: "Not configured", seats: "0", driver: "Unassigned", mileage: "0 km", status: "Available" },
+        Finance: { id: `TXN-${suffix}`, detail: createdName, category: "Review required", date: todayLabel, method: "Not recorded", amount: "৳ 0", status: "Pending" },
         "Crew & staff": { id: `STF-${suffix}`, name: createdName, role: "Staff member", phone: "Not provided", license: "Pending verification", assigned: "Unassigned", status: "Active" },
         Maintenance: { id: `WO-${suffix}`, vehicle: "Unassigned vehicle", service: createdName, due: "To be scheduled", workshop: "Unassigned", cost: "৳ 0", status: "Open" },
         Inventory: { id: `INV-${suffix}`, item: createdName, category: "General", stock: "0", unit: "Pieces", reorder: "—", status: "New" },
