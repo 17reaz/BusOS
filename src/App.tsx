@@ -6,13 +6,7 @@ import { DataTable } from "@/features/admin/components/data-table";
 import { DashboardOverview } from "@/features/admin/dashboard/dashboard-overview";
 import { AdminSidebar } from "@/features/admin/layout/admin-sidebar";
 import { downloadCsv } from "@/features/admin/utils/export-csv";
-import {
-  Activity, ArrowUpRight, Building2, Bus, CalendarDays, CalendarClock, FileBarChart,
-  CheckCircle2, ChevronRight, CircleDollarSign,
-  Clock3, CreditCard, Download, Gauge,
-  MapPinned, Menu, Navigation, Package, Plus,
-  Search, ShieldCheck, Ticket, UserRoundCog, Users, Wallet, Wifi, Wrench, X,
-} from "lucide-react";
+import { Activity, CalendarDays, ChevronRight, Download, Menu, Plus, Search, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
