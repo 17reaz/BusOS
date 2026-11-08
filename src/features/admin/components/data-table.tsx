@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye, ArrowUpDown } from "lucide-react";
-import { toast } from "sonner";
+import { downloadCsv } from "@/features/admin/utils/export-csv";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,14 +9,6 @@ import { StatusBadge } from "./status-badge";
 import type { Column, RowData } from "@/features/admin/data/demo-data";
 
 const PAGE_SIZE = 8;
-
-function toCsv(rows: RowData[], cols: Column[]) {
-  const escape = (value: string) => `"${String(value ?? "").replace(/"/g, '""')}"`;
-  return [
-    cols.map((col) => escape(col.label)).join(","),
-    ...rows.map((row) => cols.map((col) => escape(row[col.key] ?? "")).join(",")),
-  ].join("\r\n");
-}
 
 function DataTable({ rows, cols, search }: { rows: RowData[]; cols: Column[]; search: string }) {
   const [status, setStatus] = useState("All");
@@ -48,22 +40,7 @@ function DataTable({ rows, cols, search }: { rows: RowData[]; cols: Column[]; se
   const first = filtered.length === 0 ? 0 : currentPage * PAGE_SIZE + 1;
   const last = Math.min((currentPage + 1) * PAGE_SIZE, filtered.length);
 
-  const exportCsv = () => {
-    if (!filtered.length) {
-      toast.info("There are no records to export.");
-      return;
-    }
-    const blob = new Blob(["\uFEFF", toCsv(filtered, cols)], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `busos-${cols[0]?.key ?? "records"}-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-    toast.success(`Exported ${filtered.length} records.`);
-  };
+  const exportCsv = () => downloadCsv(filtered, cols, "busos-records");
 
   const toggleSort = (key: string) => {
     setSort((current) => current?.key === key
