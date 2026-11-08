@@ -75,3 +75,36 @@ The workflow is defined in `.github/workflows/ci.yml`. The first GitHub Actions 
 - No Counter or Fleet application exists yet.
 
 These gaps are expected at the demo stage; they must be resolved before the system is used for real ticket sales or operations.
+
+
+## Admin implementation update
+
+The Admin demo has now been reorganized into focused modules under `src/features/admin/`:
+
+- `components/`: reusable KPI cards, module KPI grid, status badges, sortable data table and vehicle map.
+- `dashboard/`: overview dashboard and revenue/booking channel widgets.
+- `layout/`: responsive Admin sidebar.
+- `data/`: clearly demo-only fixtures for each workspace module.
+- `utils/`: reusable CSV export helper.
+
+### Available Admin workspaces
+
+Overview, Ticket sales, Trips & schedules, Routes, Passengers, Crew & staff, Fleet, Finance, Live tracking, Maintenance, Inventory, Counters, Users & roles, and Reports.
+
+### Working demo interactions
+
+- Navigate between all listed workspaces using desktop or mobile sidebar.
+- Search visible records, filter by status, sort columns and paginate.
+- Open a read-only record detail dialog.
+- Export visible records to CSV (including Bengali text support via UTF-8 BOM).
+- Add sample records in supported workspaces; new records update the current in-memory demo state.
+- KPI cards, page labels and date context update with the selected workspace/current date.
+- Notifications and help actions provide explicit demo feedback.
+
+### Important limitations
+
+All records, KPI totals, create actions and vehicle positions are still local demo data. New records are not persisted to Supabase or a server. Seat locking, payments, user permissions, GPS ingestion and financial ledger posting are not implemented by these UI interactions. Do not use the demo for real ticket sales or financial operations.
+
+### Verification
+
+GitHub source files were updated directly on `main`. The latest Vercel status checks reported a build-rate-limit failure for the linked projects, so a successful deployment/build has **not** been verified yet. Resolve the Vercel build quota/rate-limit and run Admin lint, typecheck and production build before treating this update as release-ready.
