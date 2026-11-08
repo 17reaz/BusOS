@@ -14,9 +14,9 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'My PWA App',
-        short_name: 'PWA App',
-        description: 'Vite & Bun powered Progressive Web App',
+        name: 'BusOS Admin',
+        short_name: 'BusOS',
+        description: 'Bus company operations and administration',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
