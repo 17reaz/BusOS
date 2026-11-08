@@ -8,9 +8,9 @@ import { AdminSidebar } from "@/features/admin/layout/admin-sidebar";
 import { downloadCsv } from "@/features/admin/utils/export-csv";
 import {
   Activity, ArrowUpRight, Building2, Bus, CalendarDays, CalendarClock, FileBarChart,
-  CheckCircle2, ChevronDown, ChevronRight, CircleDollarSign,
-  Clock3, Command, CreditCard, Download, Filter, Gauge,
-  LifeBuoy, MapPinned, Menu, MoreHorizontal, Navigation, Package, Plus,
+  CheckCircle2, ChevronRight, CircleDollarSign,
+  Clock3, CreditCard, Download, Gauge,
+  MapPinned, Menu, Navigation, Package, Plus,
   Search, ShieldCheck, Ticket, UserRoundCog, Users, Wallet, Wifi, Wrench, X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
