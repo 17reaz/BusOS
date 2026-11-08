@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { columns, dataset, initialBookings, navigation, operations, pageConfig, salesBars, trips, type RowData } from "@/features/admin/data/demo-data";
+import { columns, dataset, initialBookings, pageConfig, trips, type RowData } from "@/features/admin/data/demo-data";
 import { LiveTrackingMap } from "@/features/admin/components/live-tracking-map";
-import { StatusBadge } from "@/features/admin/components/status-badge";
 import { Metric } from "@/features/admin/components/metric-card";
 import { DataTable } from "@/features/admin/components/data-table";
 import { DashboardOverview } from "@/features/admin/dashboard/dashboard-overview";
@@ -14,7 +13,6 @@ import {
   LifeBuoy, MapPinned, Menu, MoreHorizontal, Navigation, Package, Plus,
   Search, ShieldCheck, Ticket, UserRoundCog, Users, Wallet, Wifi, Wrench, X,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
