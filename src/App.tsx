@@ -20,20 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
-import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-
-declare global {
-  interface Window { L?: any }
-}
-
-
-
-
-
 
 
 function App() {
