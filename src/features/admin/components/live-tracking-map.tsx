@@ -1,3 +1,7 @@
+declare global {
+  interface Window { L?: any }
+}
+
 import { useEffect, useRef, useState } from "react";
 import { Bus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
